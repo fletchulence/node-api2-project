@@ -32,6 +32,7 @@ router.get('/:id', async (req, res)=>{
    }
 })
 
+// [POST]ing new post
 router.post('/', async (req, res)=>{
    const { title, contents } = req.body ;
    try{
@@ -39,7 +40,6 @@ router.post('/', async (req, res)=>{
          res.status(400).json({ message: 'Please provide title and contents for the post' })
       } else {
          const newPost = await Post.insert(req.body);
-         // console.log(`newPost`, newPost)
          res.status(201).json( newPost )
       }
    } catch(err){
