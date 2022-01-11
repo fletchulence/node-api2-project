@@ -14,7 +14,7 @@ router.get('/', async (req, res) =>{
          res.json(allPosts)
       }
    } catch(err){
-      res.status(500).json({ message: err.message })
+      res.status(500).json({ message: 'The post information could not be retrieved' })
    }
 })
 
@@ -23,13 +23,27 @@ router.get('/:id', async (req, res)=>{
    const postById = await Post.findById( id )
    try{
       if ( !postById ){
-         res.status(404).json({ message: 'this id does not exist'})
+         res.status(404).json({ message: 'The post with the specified ID does not exist'})
       } else {
          res.json( postById )
       }
    } catch(err){
-      console.log(`id`, id)
-      res.status(500).json({ message: err.message })
+      res.status(500).json({ message: 'The post information could not be retrieved' })
+   }
+})
+
+router.post('/', async (req, res)=>{
+   const { title, contents } = req.body ;
+   try{
+      if ( title === undefined || contents === undefined ){
+         res.status(400).json({ message: 'Please provide title and contents for the post' })
+      } else {
+         const newPost = await Post.insert(req.body);
+         // console.log(`newPost`, newPost)
+         res.status(201).json( newPost )
+      }
+   } catch(err){
+      res.status(500).json({ message: 'There was an error while saving the post to the database' })
    }
 })
 
