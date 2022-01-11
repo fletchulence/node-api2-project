@@ -53,7 +53,6 @@ router.put('/:id', async (req, res)=>{
    try{
       let dbId = await Post.findById(id)
       if( id === undefined || !dbId ){
-         // console.log(`${dbId.id}`)
          res.status(404).json({ message: 'The post with the specified ID does not exist' })
       } else if ( title === undefined || contents === undefined ){
          res.status(400).json({ message: 'Please provide title and contents for the post' })
@@ -66,5 +65,23 @@ router.put('/:id', async (req, res)=>{
       res.status(500).json({ message: 'The post information could not be modified' })
    }
 })
+
+// [DELETE] delete the post by ID0
+router.delete('/:id', async (req, res)=>{
+   const { id } = req.params
+   const bdId = await Post.findById(id)
+   try{
+      if ( !bdId ){
+         res.status(404).json({ message: 'The post with the specified ID does not exist' })
+      } else {
+         res.json( bdId )
+         await Post.remove(id)
+      }
+   } catch(err){
+      res.status(500).json({ message: 'The post could not be removed' })
+   }
+});
+
+
 
 module.exports = router
