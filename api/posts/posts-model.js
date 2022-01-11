@@ -28,7 +28,8 @@ function insert(post) {
 function update(id, post) {
   return db('posts')
     .where('id', Number(id))
-    .update(post/* {title: post.title, contents: post.contents} */);
+    .update(post/* {title: post.title, contents: post.contents} */)
+    .then();
 }
 
 function remove(id) {

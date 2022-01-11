@@ -51,15 +51,16 @@ router.put('/:id', async (req, res)=>{
    const { id } = req.params;
    const { title, contents } = req.body;
    try{
-      const dbId = await Post.findById(id)
+      let dbId = await Post.findById(id)
       if( id === undefined || !dbId ){
          // console.log(`${dbId.id}`)
          res.status(404).json({ message: 'The post with the specified ID does not exist' })
       } else if ( title === undefined || contents === undefined ){
          res.status(400).json({ message: 'Please provide title and contents for the post' })
       } else {
-         const updatedPost = await  Post.update(id, req.body);
-         res.status(200).json({ updatedPost })
+         await Post.update(id, req.body);
+         let dbId = await Post.findById(id)
+         res.status(200).json( dbId )
       }
    } catch(err){
       res.status(500).json({ message: 'The post information could not be modified' })
