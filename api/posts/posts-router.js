@@ -35,11 +35,12 @@ router.get('/:id', async (req, res)=>{
 // [POST]ing new post
 router.post('/', async (req, res)=>{
    const { title, contents } = req.body ;
-   try{
-      if ( title === undefined || contents === undefined ){
+   try {
+      if ( !title || !contents ){
          res.status(400).json({ message: 'Please provide title and contents for the post' })
       } else {
-         const newPost = await Post.insert(req.body);
+         const insertedPost = await Post.insert( req.body );
+         const newPost = await Post.findById( insertedPost.id )
          res.status(201).json( newPost )
       }
    } catch(err){
@@ -50,16 +51,18 @@ router.post('/', async (req, res)=>{
 router.put('/:id', async (req, res)=>{
    const { id } = req.params;
    const { title, contents } = req.body;
+   // const title = req.body.title
+   // const contents = req.body.contents
    try{
-      let dbId = await Post.findById(id)
-      if( id === undefined || !dbId ){
+      let dbPost = await Post.findById(id)
+      if( !id || !dbPost || id.length() === undefined ){
          res.status(404).json({ message: 'The post with the specified ID does not exist' })
       } else if ( title === undefined || contents === undefined ){
          res.status(400).json({ message: 'Please provide title and contents for the post' })
       } else {
          await Post.update(id, req.body);
-         let dbId = await Post.findById(id)
-         res.status(200).json( dbId )
+         let dbPost = await Post.findById(id)
+         res.status(200).json( dbPost )
       }
    } catch(err){
       res.status(500).json({ message: 'The post information could not be modified' })
@@ -69,12 +72,12 @@ router.put('/:id', async (req, res)=>{
 // [DELETE] delete the post by ID0
 router.delete('/:id', async (req, res)=>{
    const { id } = req.params
-   const bdId = await Post.findById(id)
+   const dbPost = await Post.findById(id)
    try{
-      if ( !bdId ){
+      if ( !dbPost ){
          res.status(404).json({ message: 'The post with the specified ID does not exist' })
       } else {
-         res.json( bdId )
+         res.json( dbPost )
          await Post.remove(id)
       }
    } catch(err){
@@ -86,7 +89,7 @@ router.get('/:id/comments', async (req, res)=>{
    const { id } = req.params;
    const postId = await Post.findById(id)
    const comment = await Post.findPostComments(id)
-   try{
+   try {
       if ( !postId ){
          res.status(404).json({ message: 'The post with the specified ID does not exist' })
       } else {
